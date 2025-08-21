@@ -1,11 +1,19 @@
-# Use official Apache HTTPD image
-FROM httpd:2.4
+FROM centos:centos8
 
-# Copy custom index.html to Apache's web root
-COPY ./index.html /usr/local/apache2/htdocs/
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
 
-# Expose port 8080
-EXPOSE 8000
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
 
-# Change default port from 80 -> 8080
-RUN sed -i 's/Listen 80/Listen 8000/' /usr/local/apache2/conf/httpd.conf
+RUN yum update -y 
+
+RUN yum install httpd -y
+
+COPY ./index.html /var/www/html
+
+RUN echo "ServerName localhost" >> /etc/httpd/conf/httpd.conf
+
+RUN httpd -k restart
+
+EXPOSE 80
+
+CMD ["httpd", "-D", "FOREGROUND"]

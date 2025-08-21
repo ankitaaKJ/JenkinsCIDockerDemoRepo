@@ -8,12 +8,13 @@ RUN yum update -y
 
 RUN yum install httpd -y
 
-COPY ./index.html /var/www/html
+COPY ./index.html /var/www/html/
 
 RUN echo "ServerName localhost" >> /etc/httpd/conf/httpd.conf
 
 RUN httpd -k restart
 
-EXPOSE 80
+EXPOSE 1000
 
 CMD ["httpd", "-D", "FOREGROUND"]
+
